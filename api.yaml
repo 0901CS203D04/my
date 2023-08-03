@@ -1,0 +1,337 @@
+openapi: 3.0.0
+info:
+  title: check API
+  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  version: 1.0 
+  
+
+servers:
+  - url: http://localhost:3003/
+    description:  Local server 
+  - url: https://prod.com/
+    description:  Pre Production server
+  - url: https://test.com/
+    description:  Production server
+  
+
+components:
+  securitySchemes:
+    ApiToken:        # arbitrary name for the security scheme
+      type: apiKey
+      in :   header
+      name: Authorization
+    
+
+  
+paths:
+  /get_all/:
+    get:
+      tags:
+        - Home Page API
+      summary: Returns a home page data.
+      parameters:
+        - name: page
+          in: query
+          description: For Offset of return Data
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: return how many results you want
+          required: true
+          schema:
+            type: integer
+        - name: price
+          in: query
+          description: return how many results you want
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: It will show error.
+        '404':
+          description: Path is wrong.
+        default:
+          description: Unexpected error  
+
+  # paths:
+  # /get_product/:
+  #   get:
+  #      security:
+  #       - ApiToken: []
+  #   summary: Get a product by ID
+      
+  #    parameters:
+  #       - in: query
+  #         name: product_id
+  #         required: true
+  #         description: The ID of the product to retrieve.
+  #         schema:
+  #           type: string
+     
+  #     responses:
+  #       '200':
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Product'
+  #       '404':
+  #         description: Product not found
+
+  paths:
+  /get_product/{product_id}:
+    get:
+      security:
+        - ApiToken: []
+      summary: Get a product by ID
+      parameters:
+        - in: path
+          name: product_id
+          required: true
+          description: The ID of the product to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '404':
+          description: Product not found
+
+  # paths:
+  # /get_product/{product_id}:
+  #   get:
+  #     security:
+  #       - ApiToken: []
+  #     summary: Get a product by ID
+  #     parameters:
+  #       - in: path
+  #         name: product_id
+  #         required: true
+  #         schema:
+  #           type: string
+  #         description: ID of the product
+
+  #     responses:
+  #       '200':
+  #         description: Successful response
+  #       # Add other response codes and descriptions as needed
+
+  paths:
+  /registration:
+    post:
+      summary: User registration
+      description: Register a new user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                email:         
+                  type: string
+
+                password:       
+                  type: varchar
+                  
+                
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+
+
+  paths:
+  /update_profile:
+    post:
+      summary: Update user profile
+      description: Update the user profile information.
+      security:
+        - ApiToken: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user_img:
+                  type: string
+                  format: binary
+              required:
+                - user_img
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          
+  paths:
+  /getuser:
+    post:
+      summary: Get user information
+      description: Get the information of the authenticated user.
+      security:
+        - ApiToken: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+
+  paths:
+  /login:
+    post:
+      summary: User login
+      description: Authenticate and log in a user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/register'
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+
+
+ 
+
+
+
+
+  
+
+  
+    
+  # paths:
+  # /add_product:
+  #   post:
+  #     tags:
+  #       - insert product List API 
+  #     summary: insert a product. 
+  #     description: <b> Request :- </b> <br /> <br />
+  #             <b> name* </b>  is required <br /> 
+  #             <b> price* </b>  is required <br /> 
+  #             <b> description* </b>  is required <br />    
+  #     post:
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         multipart/form-data:
+  #          #application/json:
+  #           schema:
+  #             type: object
+  #             properties: 
+  #               name:         
+  #                 type: string
+  #                 example: "bata"  
+  #               price:       
+  #                 type: integer
+  #                 example: 200 
+  #               description:
+  #                 type: string
+  #                 example: "it's good"
+  #               product_img:
+  #                 type: string 
+  #                 format: binary
+         
+  #     responses:
+  #       '200':
+  #         description: A user object. 
+  #       '400':
+  #         description: The specified user ID is invalid (not a number).
+  #       '404':
+  #         description: A user with the specified ID was not found.
+  #       default:
+  #         description: Unexpected error
+  
+
+
+  paths:
+  /add_product:
+    post:
+      summary: Add a new product
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                product_img:
+                  type: string
+                  format: binary
+                name:
+                  type: string
+                price:
+                  type: number
+                description:
+                  type: string  
+                # Add other properties as needed for the product object
+
+      responses:
+        '200':
+          description: Successful response
+        # Add other response codes and descriptions as needed
+
+
+
+
+  
+ 
+  paths:
+  /forgetpassword:
+    post:
+      summary: Request password reset
+      description: Send a password reset email to the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgetPasswordRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+
+  paths:
+  /resetpassword:
+    post:
+      summary: Reset user password
+      description: Reset the password for a user using a password reset token.
+      parameters:
+        - in: query
+          name: token
+          required: true
+          description: The ID of the product to retrieve.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+
